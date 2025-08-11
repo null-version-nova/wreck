@@ -1,15 +1,21 @@
-use std::{error::Error, ops::{Index, IndexMut}};
-use sdl3::Sdl;
+use std::{error::Error, ops::{Index, IndexMut}, sync::Mutex};
+use once_cell::sync::Lazy;
+
 use crate::display::window::Window;
 
+/// Thread safe rendering singleton!
 pub struct RenderManager {
-    sdl: Sdl,
-    pub video: sdl3::VideoSubsystem,
+    sdl: sdl3::Sdl,
+    video: sdl3::VideoSubsystem,
     windows: Vec<Window>
 }
 
+pub static INSTANCE: Lazy<Mutex<RenderManager>> = Lazy::new(||{
+    Mutex::new(RenderManager::new().unwrap())
+});
+
 impl RenderManager {
-    pub fn new() -> Result<RenderManager,Box<dyn Error>> {
+    fn new() -> Result<RenderManager,Box<dyn Error>> {
         let process = sdl3::init()?;
         Ok(RenderManager {
             video: process.video()?,
@@ -36,3 +42,6 @@ impl IndexMut<usize> for RenderManager {
         &mut self.windows[index]
     }
 }
+
+unsafe impl Sync for RenderManager {}
+unsafe impl Send for RenderManager {}

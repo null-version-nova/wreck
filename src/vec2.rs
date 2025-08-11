@@ -1,8 +1,8 @@
 //! # Vector2
 
-mod arithmetic;
-mod comparison;
-mod vec;
+pub mod arithmetic;
+pub mod comparison;
+pub mod vec;
 
 #[cfg(test)]
 mod tests;
