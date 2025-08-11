@@ -1,0 +1,11 @@
+[package]
+	name = "wreck"
+	version = "0.1.0"
+	edition = "2024"
+
+[dependencies]
+	sdl3 = "*"
+	once_cell = "*"
+
+[build-dependencies]
+	bindgen = "0.72.0"
