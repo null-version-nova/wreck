@@ -1,21 +1,11 @@
-use std::collections::LinkedList;
+use std::any::Any;
 
-pub struct Event<Args> where Args : Copy {
-    functions: LinkedList<Box<dyn Fn(Args) -> ()>>
-}
+pub mod standard_event;
+pub mod printing_event;
 
-impl <Args> Event<Args> where Args : Copy {
-    pub fn new() -> Event<Args> {
-        Event { functions: LinkedList::new() }
-    }
+pub trait AbstractEvent {}
 
-    pub fn register<T: Fn(Args) -> () + 'static>(&mut self, function: T) {
-        self.functions.push_back(Box::new(function));
-    }
-
-    pub fn call(&self, args: Args) {
-        for f in &self.functions {
-            f.as_ref()(args)
-        }
-    }
+pub trait Event<Args> where Args : Copy {
+    fn register<T: FnMut(Args) -> () + 'static>(&mut self, function: T);
+    fn call(&mut self, args: Args);
 }
