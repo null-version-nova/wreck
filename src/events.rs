@@ -1,5 +1,3 @@
-use std::any::Any;
-
 pub mod standard_event;
 pub mod printing_event;
 

@@ -1,4 +1,4 @@
-use std::{any::Any, error::Error, ops::{Index, IndexMut}, sync::Mutex};
+use std::{error::Error, ops::{Index, IndexMut}, sync::Mutex};
 use once_cell::sync::Lazy;
 use sdl3::event::Event;
 
