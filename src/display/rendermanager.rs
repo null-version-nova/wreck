@@ -2,7 +2,11 @@ use std::{error::Error, ops::{Index, IndexMut}, sync::Mutex};
 use once_cell::sync::Lazy;
 use sdl3::event::Event;
 
-use crate::{display::{process::Processing, window::Window}, events::Event as WreckEvent};
+use crate::{display::{process::Processing, window::Window}, events::{event_provider::{self, EventProvider}, Event as WreckEvent}};
+
+#[derive(Clone,Copy,Debug)]
+pub struct QuitEvent {}
+impl WreckEvent for QuitEvent {}
 
 /// Thread safe rendering singleton!
 pub struct RenderManager {
@@ -12,7 +16,7 @@ pub struct RenderManager {
     events: sdl3::EventPump,
 
     // Events
-    quit_event: crate::events::printing_event::PrintingEvent<()>,
+    quit_event: event_provider::EventProvider<QuitEvent>,
 
     // Data
     windows: Vec<Window>
@@ -30,17 +34,13 @@ impl RenderManager {
             events: process.event_pump()?,
             _sdl: process,
             windows: vec![],
-            quit_event: crate::events::printing_event::PrintingEvent::new()
+            quit_event: EventProvider::new()
         })
     }
 
     pub fn get_new_window(&mut self,title: &str, width: u32, height: u32) -> Result<&mut Window,Box<dyn Error>> {
         self.windows.push(Window::new(&self.video,title,width,height)?);
         Ok(self.windows.last_mut().expect("Just put this here!"))
-    }
-
-    pub fn register_quit_event<T: FnMut(()) -> () + 'static>(&mut self,event: T) {
-        self.quit_event.register(event);
     }
 }
 
@@ -63,7 +63,7 @@ impl Processing for RenderManager {
             match e {
                 Event::Quit { timestamp: _ } => {
                     println!("Trying to quit!");
-                    self.quit_event.call(());
+                    self.quit_event.execute(QuitEvent{});
                 }
                 _ => {}
             }
@@ -76,3 +76,13 @@ impl Processing for RenderManager {
 
 unsafe impl Sync for RenderManager {}
 unsafe impl Send for RenderManager {}
+
+impl crate::events::EventProvider<QuitEvent> for RenderManager {
+    fn register(&mut self, receiver: *const dyn crate::events::EventReceiver<QuitEvent>) {
+        self.quit_event.register(receiver);
+    }
+
+    fn deregister(&mut self, receiver: *const (dyn crate::events::EventReceiver<QuitEvent>)) {
+        self.quit_event.deregister(receiver);
+    }
+}
