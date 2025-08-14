@@ -1,9 +1,9 @@
-use std::{ops::Deref, time::{Duration, Instant}};
+use std::{cell::RefCell, error::Error, ops::Deref, rc::Rc, time::{Duration, Instant}};
 
-use crate::{display::rendermanager::{self, QuitEvent}, events::{Event, EventProvider, EventReceiver}};
+use crate::{display::rendermanager::{self, QuitEvent}, events::{Event, EventProvider, EventProviderDelegate, EventReceiver}};
 
 pub trait Processing {
-    fn process(&mut self,delta: f64);
+    fn process(&mut self,delta: f64) -> Result<(),Box<dyn Error>>;
 }
 
 pub trait Process : Processing {
@@ -19,8 +19,8 @@ pub struct Game {
     last_delta: f64,
     running: bool,
     process_loop: Box<dyn Fn(f64) -> ()>,
-    quit_event_receiver: crate::events::event_receiver::EventReceiver<QuitEvent>,
-    process_event: crate::events::event_provider::EventProvider<ProcessEvent>,
+    quit_event_receiver: Rc<RefCell<EventReceiver<QuitEvent>>>,
+    process_event: EventProviderDelegate<ProcessEvent>,
 }
 
 impl Game {
@@ -30,21 +30,24 @@ impl Game {
             last_delta: minimum_delta,
             running: true,
             process_loop: process_loop,
-            quit_event_receiver: crate::events::event_receiver::EventReceiver::new(),
+            quit_event_receiver: Rc::new(RefCell::new(EventReceiver::new())),
             process_event: crate::events::event_provider::EventProvider::new()
         };
-        rendermanager::INSTANCE.lock().unwrap().register(&game);
+        rendermanager::INSTANCE.lock().unwrap().register(game.quit_event_receiver.clone());
         game
     }
 }
 
 impl Processing for Game {
-fn process(&mut self,delta: f64) {
-        if self.quit_event_receiver.events.len() >= 1 {
-            self.running = false;
+    fn process(&mut self,delta: f64) -> Result<(),Box<dyn Error>> {
+        {
+            let _ = self.quit_event_receiver.borrow_mut().execute(&mut |_|{
+                self.running = false;
+            });
         }
         self.process_event.execute(ProcessEvent { delta });
         self.process_loop.deref()(delta);
+        Ok(())
     }
 }
 
@@ -52,7 +55,7 @@ impl Process for Game {
     fn run(&mut self) {
         while self.running == true {
             let now = Instant::now();
-            self.process(self.last_delta);
+            let _ = self.process(self.last_delta);
             let after = now.elapsed();
             std::thread::sleep(Duration::from_secs_f64(self.minimum_delta) - after);
             self.last_delta = now.elapsed().as_secs_f64();
@@ -60,20 +63,9 @@ impl Process for Game {
     }
 }
 
-impl EventReceiver<QuitEvent> for Game {
-    fn receive(&mut self, event: QuitEvent) {
-        println!("event {event:?} received!");
-        self.quit_event_receiver.receive(event);
-    }
-}
-
 impl EventProvider<ProcessEvent> for Game {
-    fn register(&mut self, receiver: *const dyn EventReceiver<ProcessEvent>) {
+    fn register(&mut self, receiver: Rc<RefCell<EventReceiver<ProcessEvent>>>) {
         self.process_event.register(receiver);
-    }
-
-    fn deregister(&mut self, receiver: *const dyn EventReceiver<ProcessEvent>) {
-        self.process_event.deregister(receiver);
     }
 }
 

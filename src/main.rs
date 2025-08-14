@@ -8,7 +8,7 @@ fn main() -> Result<(),Box<dyn Error>> {
         render_manager.get_new_window("meow", 1280, 720)?;
     }
     let mut process = wreck::display::process::Game::new(0.016,Box::new(|delta|{
-        wreck::display::rendermanager::INSTANCE.lock().unwrap().process(delta);
+        let _ = wreck::display::rendermanager::INSTANCE.lock().unwrap().process(delta);
     }));
     process.run();
     Ok(())

@@ -1,8 +1,8 @@
-use std::{error::Error, ops::{Index, IndexMut}, sync::Mutex};
+use std::{cell::RefCell, error::Error, ops::{Index, IndexMut}, rc::{Rc, Weak}, sync::Mutex};
 use once_cell::sync::Lazy;
 use sdl3::event::Event;
 
-use crate::{display::{process::Processing, window::Window}, events::{event_provider::{self, EventProvider}, Event as WreckEvent}};
+use crate::{display::{process::Processing, window::Window}, events::{event_provider::{self, EventProvider}, Event as WreckEvent, EventReceiver}};
 
 #[derive(Clone,Copy,Debug)]
 pub struct QuitEvent {}
@@ -58,7 +58,7 @@ impl IndexMut<usize> for RenderManager {
 }
 
 impl Processing for RenderManager {
-    fn process(&mut self,_delta: f64) {
+    fn process(&mut self,_delta: f64) -> Result<(),Box<dyn Error>> {
         for e in self.events.poll_iter() {
             match e {
                 Event::Quit { timestamp: _ } => {
@@ -71,6 +71,7 @@ impl Processing for RenderManager {
         for i in &mut self.windows {
             i.draw();
         }
+        Ok(())
     }
 }
 
@@ -78,11 +79,7 @@ unsafe impl Sync for RenderManager {}
 unsafe impl Send for RenderManager {}
 
 impl crate::events::EventProvider<QuitEvent> for RenderManager {
-    fn register(&mut self, receiver: *const dyn crate::events::EventReceiver<QuitEvent>) {
+    fn register(&mut self, receiver: Rc<RefCell<EventReceiver<QuitEvent>>>) {
         self.quit_event.register(receiver);
-    }
-
-    fn deregister(&mut self, receiver: *const (dyn crate::events::EventReceiver<QuitEvent>)) {
-        self.quit_event.deregister(receiver);
     }
 }
