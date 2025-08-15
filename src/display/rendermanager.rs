@@ -1,8 +1,8 @@
-use std::{cell::RefCell, error::Error, ops::{Index, IndexMut}, rc::{Rc, Weak}, sync::Mutex};
+use std::{cell::RefCell, error::Error, ops::{Index, IndexMut}, rc::Rc, sync::Mutex};
 use once_cell::sync::Lazy;
 use sdl3::event::Event;
 
-use crate::{display::{process::Processing, window::Window}, events::{event_provider::{self, EventProvider}, Event as WreckEvent, EventReceiver}};
+use crate::{display::{process::Processing, window::Window}, events::{Event as WreckEvent, EventProviderDelegate, EventReceiver}};
 
 #[derive(Clone,Copy,Debug)]
 pub struct QuitEvent {}
@@ -16,7 +16,7 @@ pub struct RenderManager {
     events: sdl3::EventPump,
 
     // Events
-    quit_event: event_provider::EventProvider<QuitEvent>,
+    quit_event: EventProviderDelegate<QuitEvent>,
 
     // Data
     windows: Vec<Window>
@@ -34,7 +34,7 @@ impl RenderManager {
             events: process.event_pump()?,
             _sdl: process,
             windows: vec![],
-            quit_event: EventProvider::new()
+            quit_event: EventProviderDelegate::new()
         })
     }
 
