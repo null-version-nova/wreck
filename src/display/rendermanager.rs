@@ -1,8 +1,8 @@
-use std::{cell::RefCell, error::Error, ops::{Index, IndexMut}, rc::Rc, sync::Mutex};
+use std::{error::Error, ops::{Index, IndexMut}, sync::Mutex};
 use once_cell::sync::Lazy;
 use sdl3::event::Event;
 
-use crate::{display::{process::Processing, window::Window}, events::{Event as WreckEvent, EventProviderDelegate, EventReceiver}};
+use crate::{display::renderer::{window_renderer2::WindowRenderer2, Renderer}, events::{Event as WreckEvent, EventProviderDelegate, ReceiverCell},process::Processing};
 
 #[derive(Clone,Copy,Debug)]
 pub struct QuitEvent {}
@@ -11,15 +11,15 @@ impl WreckEvent for QuitEvent {}
 /// Thread safe rendering singleton!
 pub struct RenderManager {
     // Subsystems
-    _sdl: sdl3::Sdl,
-    video: sdl3::VideoSubsystem,
-    events: sdl3::EventPump,
+    pub sdl: sdl3::Sdl,
+    pub video: sdl3::VideoSubsystem,
+    pub events: sdl3::EventPump,
 
     // Events
     quit_event: EventProviderDelegate<QuitEvent>,
 
     // Data
-    windows: Vec<Window>
+    windows: Vec<Box<dyn Renderer>>
 }
 
 pub static INSTANCE: Lazy<Mutex<RenderManager>> = Lazy::new(||{
@@ -32,28 +32,28 @@ impl RenderManager {
         Ok(RenderManager {
             video: process.video()?,
             events: process.event_pump()?,
-            _sdl: process,
+            sdl: process,
             windows: vec![],
             quit_event: EventProviderDelegate::new()
         })
     }
 
-    pub fn get_new_window(&mut self,title: &str, width: u32, height: u32) -> Result<&mut Window,Box<dyn Error>> {
-        self.windows.push(Window::new(&self.video,title,width,height)?);
-        Ok(self.windows.last_mut().expect("Just put this here!"))
+    pub fn get_new_window(&mut self,title: &str, width: u32, height: u32) -> Result<&mut dyn Renderer,Box<dyn Error>> {
+        self.windows.push(Box::new(WindowRenderer2::new(&self.video,title,width,height)?));
+        Ok(self.windows.last_mut().expect("Just put this here!").as_mut())
     }
 }
 
 impl Index<usize> for RenderManager {
-    type Output = Window;
+    type Output = dyn Renderer;
     fn index(&self, index: usize) -> &Self::Output {
-        &self.windows[index]
+        self.windows[index].as_ref()
     }
 }
 
 impl IndexMut<usize> for RenderManager {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.windows[index]
+        self.windows[index].as_mut()
     }
 }
 
@@ -62,7 +62,6 @@ impl Processing for RenderManager {
         for e in self.events.poll_iter() {
             match e {
                 Event::Quit { timestamp: _ } => {
-                    println!("Trying to quit!");
                     self.quit_event.execute(QuitEvent{});
                 }
                 _ => {}
@@ -75,11 +74,10 @@ impl Processing for RenderManager {
     }
 }
 
-unsafe impl Sync for RenderManager {}
 unsafe impl Send for RenderManager {}
 
 impl crate::events::EventProvider<QuitEvent> for RenderManager {
-    fn register(&mut self, receiver: Rc<RefCell<EventReceiver<QuitEvent>>>) {
+    fn register(&mut self, receiver: ReceiverCell<QuitEvent>) {
         self.quit_event.register(receiver);
     }
 }

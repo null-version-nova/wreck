@@ -1,7 +1,10 @@
-use crate::events::Event;
+use std::rc::Rc;
+use std::cell::RefCell;
+
+use crate::events::{Event, ReceiverCell};
 
 pub struct EventReceiver<E: Event + 'static> {
-    events: Vec<E>,
+    events: Vec<E>
 }
 
 impl <E: Event + 'static> EventReceiver<E> {
@@ -10,14 +13,12 @@ impl <E: Event + 'static> EventReceiver<E> {
             events: Vec::new(),
         }
     }
+    pub fn new_cell() -> ReceiverCell<E> {
+        Rc::new(RefCell::new(Self { events: Vec::new() }))
+    }
 
     pub fn receive(&mut self, event: E) {
-        println!("event {event:?} received!");
         self.events.push(event);
-        println!("New event length is {}",self.events.len());
-        for i in self.events.iter() {
-            println!("{i:?}");
-        }
     }
 
     pub fn execute(&mut self, func: &mut dyn FnMut(E) -> ()) {

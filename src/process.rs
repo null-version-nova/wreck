@@ -1,6 +1,6 @@
-use std::{cell::RefCell, error::Error, ops::Deref, rc::Rc, time::{Duration, Instant}};
+use std::{error::Error, ops::Deref, time::{Duration, Instant}};
 
-use crate::{display::rendermanager::{self, QuitEvent}, events::{Event, EventProvider, EventProviderDelegate, EventReceiver}};
+use crate::{display::rendermanager::{self, QuitEvent}, events::{ReceiverCell, Event, EventProvider, EventProviderDelegate, EventReceiver}};
 
 pub trait Processing {
     fn process(&mut self,delta: f64) -> Result<(),Box<dyn Error>>;
@@ -19,7 +19,7 @@ pub struct Game {
     last_delta: f64,
     running: bool,
     process_loop: Box<dyn Fn(f64) -> ()>,
-    quit_event_receiver: Rc<RefCell<EventReceiver<QuitEvent>>>,
+    quit_event_receiver: ReceiverCell<QuitEvent>,
     process_event: EventProviderDelegate<ProcessEvent>,
 }
 
@@ -30,8 +30,8 @@ impl Game {
             last_delta: minimum_delta,
             running: true,
             process_loop: process_loop,
-            quit_event_receiver: Rc::new(RefCell::new(EventReceiver::new())),
-            process_event: crate::events::event_provider::EventProvider::new()
+            quit_event_receiver: EventReceiver::new_cell(),
+            process_event: EventProviderDelegate::new()
         };
         rendermanager::INSTANCE.lock().unwrap().register(game.quit_event_receiver.clone());
         game
@@ -64,7 +64,7 @@ impl Process for Game {
 }
 
 impl EventProvider<ProcessEvent> for Game {
-    fn register(&mut self, receiver: Rc<RefCell<EventReceiver<ProcessEvent>>>) {
+    fn register(&mut self, receiver: ReceiverCell<ProcessEvent>) {
         self.process_event.register(receiver);
     }
 }

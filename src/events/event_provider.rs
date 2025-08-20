@@ -1,9 +1,7 @@
-use std::{cell::RefCell, rc::Rc};
-
-use crate::events::{Event, EventReceiver};
+use crate::events::{Event, ReceiverCell};
 
 pub struct EventProvider<E : Event + 'static> {
-    receivers: Vec<Rc<RefCell<EventReceiver<E>>>>,
+    receivers: Vec<ReceiverCell<E>>,
 }
 
 impl <E: Event> EventProvider<E> {
@@ -20,7 +18,7 @@ impl <E: Event> EventProvider<E> {
 }
 
 impl <E: Event> super::EventProvider<E> for EventProvider<E> {
-    fn register(&mut self, receiver: Rc<RefCell<super::EventReceiver<E>>>) {
+    fn register(&mut self, receiver: ReceiverCell<E>) {
         self.receivers.push(receiver);
     }
 }

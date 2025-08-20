@@ -9,5 +9,7 @@ use std::{cell::RefCell, fmt::Debug, rc::Rc};
 pub trait Event : Copy + Debug {}
 
 pub trait EventProvider<E: Event> {
-    fn register(&mut self, receiver: Rc<RefCell<EventReceiver<E>>>);
+    fn register(&mut self, receiver: ReceiverCell<E>);
 }
+
+pub type ReceiverCell<T> = Rc<RefCell<EventReceiver<T>>>;

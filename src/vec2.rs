@@ -24,7 +24,13 @@ impl<T: Copy> Vector2<T> {
     pub fn into<U: From<T>>(&self) -> Vector2<U> {
         Vector2 {
             x: self.x.into(),
-            y: self.x.into()
+            y: self.y.into()
+        }
+    }
+    pub fn from<U: Into<T>>(other: Vector2<U>) -> Vector2<T> {
+        Self {
+            x: other.x.into(),
+            y: other.y.into()
         }
     }
     pub fn dot<U: Mul<T>>(&self,other: Vector2<U>) -> <<U as Mul<T>>::Output as Add>::Output where <U as Mul<T>>::Output: Add {
@@ -47,6 +53,21 @@ impl<T: Clone> Clone for Vector2<T> {
             x: self.x.clone(),
             y: self.y.clone()
         }
+    }
+}
+
+impl <T> From<(T,T)> for Vector2<T> {
+    fn from(value: (T,T)) -> Self {
+        Self {
+            x: value.0,
+            y: value.1,
+        }
+    }
+}
+
+impl <T> From<Vector2<T>> for (T,T) {
+    fn from(value: Vector2<T>) -> Self {
+        (value.x,value.y)
     }
 }
 

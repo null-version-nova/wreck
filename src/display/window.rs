@@ -1,18 +1,11 @@
-use std::error::Error;
+use crate::vec2::Vector2;
 
-/// A window spawned from [RenderManager](super::rendermanager::RenderManager)
-pub struct Window {
-    handle: sdl3::render::Canvas<sdl3::video::Window>,
-}
+pub trait Window {
+    fn resolution(&self) -> Vector2<u32>;
 
-impl Window {
-    pub fn new(value: &sdl3::VideoSubsystem, title: &str, width: u32, height: u32) -> Result<Self,Box<dyn Error>> {
-        Ok(Window {
-            handle: value.window_and_renderer(title, width, height)?,
-        })
-    }
+    fn set_resolution(&mut self, new: Vector2<u32>) -> bool;
 
-    pub fn draw(&mut self) {
-        self.handle.present();
-    }
+    fn title(&self) -> &str;
+
+    fn set_title(&mut self, new: &str) -> bool;
 }
