@@ -5,11 +5,11 @@ pub struct WindowGL {
 }
 
 impl Window for WindowGL {
-    fn resolution(&self) -> crate::vec2::Vector2<u32> {
+    fn resolution(&self) -> crate::math::vec2::Vector2<u32> {
         todo!()
     }
 
-    fn set_resolution(&mut self, new: crate::vec2::Vector2<u32>) -> bool {
+    fn set_resolution(&mut self, new: crate::math::vec2::Vector2<u32>) -> bool {
         todo!()
     }
 

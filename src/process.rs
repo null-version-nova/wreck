@@ -1,6 +1,6 @@
 use std::{error::Error, ops::Deref, time::{Duration, Instant}};
 
-use crate::{display::rendermanager::{self, QuitEvent}, events::{ReceiverCell, Event, EventProvider, EventProviderDelegate, EventReceiver}};
+use crate::{display::rendermanager::{self, QuitEvent}, utils::events::{ReceiverCell, Event, EventProvider, EventProviderDelegate, EventReceiver}};
 
 pub trait Processing {
     fn process(&mut self,delta: f64) -> Result<(),Box<dyn Error>>;

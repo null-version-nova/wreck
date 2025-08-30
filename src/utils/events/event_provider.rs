@@ -1,4 +1,4 @@
-use crate::events::{Event, ReceiverCell};
+use super::{Event, ReceiverCell};
 
 pub struct EventProvider<E : Event + 'static> {
     receivers: Vec<ReceiverCell<E>>,

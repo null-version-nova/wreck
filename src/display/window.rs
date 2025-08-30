@@ -1,4 +1,4 @@
-use crate::vec2::Vector2;
+use crate::math::vec2::Vector2;
 
 pub trait Window {
     fn resolution(&self) -> Vector2<u32>;

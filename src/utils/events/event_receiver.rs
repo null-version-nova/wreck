@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::events::{Event, ReceiverCell};
+use super::{Event, ReceiverCell};
 
 pub struct EventReceiver<E: Event + 'static> {
     events: Vec<E>

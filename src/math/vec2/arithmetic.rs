@@ -12,7 +12,17 @@ use std::ops::{
     Rem,
     RemAssign,
 };
+use crate::math::vector_ops::Dot;
+
 use super::Vector2;
+
+impl <T: Mul<U> + Copy,U> Dot<Vector2<U>> for Vector2<T> where T::Output : Add {
+    type Output = <T::Output as Add>::Output;
+
+    fn dot(self,other: Vector2<U>) -> Self::Output {
+        self.x * other.x + self.y * other.y
+    }
+}
 
 // Unary Operations
 
