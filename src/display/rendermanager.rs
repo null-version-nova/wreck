@@ -2,7 +2,7 @@ use std::{error::Error, ops::{Index, IndexMut}, sync::Mutex};
 use once_cell::sync::Lazy;
 use sdl3::event::Event;
 
-use crate::{display::renderer::{window_renderer2::WindowRenderer2, Renderer}, utils::events::{Event as WreckEvent, EventProviderDelegate, ReceiverCell},process::Processing};
+use crate::{display::renderers::{window_renderer2::WindowRenderer2, Renderer}, utils::events::{Event as WreckEvent, EventProviderDelegate, ReceiverCell},process::Processing};
 
 #[derive(Clone,Copy,Debug)]
 pub struct QuitEvent {}

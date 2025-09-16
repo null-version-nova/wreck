@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::{display::window::Window, math::vec2::Vector2};
+use crate::{display::windows::Window, math::vec2::Vector2};
 
 pub struct WindowSDL {
     handle: sdl3::video::Window,

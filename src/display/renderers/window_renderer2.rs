@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::{display::{renderer::Renderer, window::Window}, math::vec2::Vector2};
+use crate::{display::{renderers::Renderer, windows::Window}, math::vec2::Vector2};
 
 pub struct WindowRenderer2 {
     handle: sdl3::render::Canvas<sdl3::video::Window>,

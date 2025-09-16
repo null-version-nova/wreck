@@ -10,17 +10,12 @@ mod tests;
 
 use std::fmt;
 
-pub trait Magnitude<T> : Copy {
-fn mag(self) -> T;
-}
 
 #[derive(Debug)]
 pub struct Vector2<T> {
     pub x: T,
     pub y: T,
 }
-
-
 
 impl<T: Default> Default for Vector2<T> {
     fn default() -> Self {

@@ -2,7 +2,7 @@ use std::error::Error;
 
 use sdl3::gpu::Device;
 
-use crate::display::{renderer::Renderer, window_sdl::WindowSDL};
+use crate::display::{renderers::Renderer, windows::window_sdl::WindowSDL};
 
 pub struct WindowRenderer3D {
     handle: Device,
@@ -31,6 +31,10 @@ impl WindowRenderer3D {
 
     pub fn take_window(&mut self) -> Option<WindowSDL> {
         self.target.take()
+    }
+
+    pub(in super::super) fn device_ref(&self) -> &Device {
+        &self.handle
     }
 }
 

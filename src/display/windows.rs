@@ -1,3 +1,6 @@
+pub mod window_gl;
+pub mod window_sdl;
+
 use crate::math::vec2::Vector2;
 
 pub trait Window {

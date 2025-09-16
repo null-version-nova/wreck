@@ -1,4 +1,4 @@
-use crate::display::window::Window;
+use crate::display::windows::Window;
 
 pub struct WindowGL {
 
