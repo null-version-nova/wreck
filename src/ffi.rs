@@ -5,5 +5,4 @@
 #![allow(improper_ctypes)]
 
 pub mod sdl;
-include!(concat!(env!("OUT_DIR"), "/GLFWbindings.rs"));
-
+pub mod glfw;

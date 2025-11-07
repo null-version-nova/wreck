@@ -6,6 +6,10 @@
 [dependencies]
 	sdl3 = "*"
 	once_cell = "*"
+	winit = "*"
+	raw-window-handle = "*"
+	glfw = "*"
+	gl = "0.14.0"
 
 [build-dependencies]
 	bindgen = "0.72.0"
