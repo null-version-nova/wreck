@@ -1,8 +1,5 @@
-use std::ops::{Index, IndexMut};
-
 use crate::registry::resource_name::ResourceName;
 
 pub mod resource_name;
 
-pub trait Registry<T,U = ResourceName> {
-}
+pub trait Registry<T, U = ResourceName> {}
