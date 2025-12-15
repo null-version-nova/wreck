@@ -7,7 +7,12 @@ pub struct WindowSDL {
 }
 
 impl WindowSDL {
-    pub fn new(value: &sdl3::VideoSubsystem, title: &str, width: u32, height: u32) -> Result<Self,Box<dyn Error>> {
+    pub fn new(
+        value: &sdl3::VideoSubsystem,
+        title: &str,
+        width: u32,
+        height: u32,
+    ) -> Result<Self, Box<dyn Error>> {
         Ok(Self {
             handle: value.window(title, width, height).build()?,
         })
