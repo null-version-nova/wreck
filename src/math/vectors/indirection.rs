@@ -1,8 +1,11 @@
-use std::{ops::{Deref, DerefMut}, ptr::from_ref};
+//! Field overload in Rust is impossible. Unless you do pointer indirection!
+
+use std::{
+    ops::{Deref, DerefMut},
+    ptr::from_ref,
+};
 
 use super::Vector;
-
-/// Field overload in Rust is impossible. Unless you do pointer indirection!
 
 #[repr(C)]
 pub struct VX<T> {

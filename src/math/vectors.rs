@@ -12,7 +12,10 @@ use std::{
     slice::Iter,
 };
 
-#[repr(C)]
+#[cfg(feature = "bytemuck")]
+use bytemuck::{Pod, TransparentWrapper, Zeroable};
+
+#[repr(transparent)]
 #[derive(Debug)]
 pub struct Vector<T, const N: usize> {
     pub data: [T; N],
@@ -85,3 +88,12 @@ impl<T: Display, const N: usize> Display for Vector<T, N> {
         }
     }
 }
+
+#[cfg(feature = "bytemuck")]
+unsafe impl<T: Pod, const N: usize> Pod for Vector<T, N> {}
+
+#[cfg(feature = "bytemuck")]
+unsafe impl<T: Zeroable, const N: usize> Zeroable for Vector<T, N> {}
+
+#[cfg(feature = "bytemuck")]
+unsafe impl<T, const N: usize> TransparentWrapper<[T; N]> for Vector<T, N> {}
