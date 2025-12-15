@@ -1,15 +1,19 @@
+[workspace]
+resolver = "3"
+members = ["wreck-live"]
+
 [package]
-	name = "wreck"
-	version = "0.1.0"
-	edition = "2024"
+name = "wreck"
+version = "0.1.0"
+edition = "2024"
 
 [dependencies]
-	sdl3 = "*"
-	once_cell = "*"
-	winit = "*"
-	raw-window-handle = "*"
-	glfw = "*"
-	gl = "0.14.0"
+sdl3 = "*"
+once_cell = "*"
+winit = "*"
+raw-window-handle = "*"
+glfw = "*"
+gl = "0.14.0"
 
 [build-dependencies]
-	bindgen = "0.72.0"
+bindgen = "0.72.0"
