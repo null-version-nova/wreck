@@ -1,4 +1,4 @@
-use crate::math::vector_ops::Dot;
+use crate::math::vectors::ops::Dot;
 
 use super::Vector;
 use std::{

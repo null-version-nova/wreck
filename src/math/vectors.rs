@@ -1,6 +1,8 @@
 pub mod arithmetic;
 pub mod comparison;
 pub mod indirection;
+pub mod ops;
+pub mod mag;
 
 #[cfg(test)]
 mod tests;
