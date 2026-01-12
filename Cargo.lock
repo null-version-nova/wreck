@@ -471,6 +471,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f27ae1dd37df86211c42e150270f82743308803d90a6f6e6651cd730d5e1732f"
 
 [[package]]
+name = "delegate"
+version = "0.13.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "780eb241654bf097afb00fc5f054a09b687dad862e485fdcf8399bb056565370"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "dispatch"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1011,6 +1022,32 @@ name = "noop_proc_macro"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0676bb32a98c1a483ce53e500a81ad9c3d5b3f7c920c28c24e9cb0980d0b5bc8"
+
+[[package]]
+name = "novas-inheritance"
+version = "0.1.0"
+dependencies = [
+ "delegate",
+ "novas-inheritance-class",
+ "novas-inheritance-inherit",
+]
+
+[[package]]
+name = "novas-inheritance-class"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "novas-inheritance-inherit"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "num-bigint"
@@ -2699,13 +2736,16 @@ name = "wreck"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
+ "novas-inheritance",
 ]
 
 [[package]]
 name = "wreck-live"
 version = "0.1.0"
 dependencies = [
+ "delegate",
  "image",
+ "novas-inheritance",
  "vulkano",
  "vulkano-shaders",
  "winit",
